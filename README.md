@@ -152,7 +152,3 @@ To inspect registers and step through individual instructions:
 - **David Farta** - [GitHub Profile](https://github.com/FartaDavid)
 
 ---
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
