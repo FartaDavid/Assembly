@@ -1,47 +1,158 @@
-La task-ul 1:
-    -am pastrat la inceput primul element dupa care am parcurs cu un for toate elementele
-    -am salvat in alt registru de fiecare data elementul parcurs - 1
-    -daca este egal cu elementul de la incepu am pus la .next din eax nodul gasit
-    -daca acesta este egal cu numarul n atunci verific daca mai sunt pasi de facut
-    -la final il caut pe 1 si il pun in registrul eax
+# Assembly Project
 
-La task-ul 2:
-    -am pastrat str si lungimea 
-    -am facut un for care parcurge string-ul caracter cu caracter
-    -verific daca ajunge la final, iar daca da pune ultimul cuvant in vectorul de string-uri
-    -daca gaseste spatiu
-    -atunci cand gaseste, pune NULL in loc de spatiu si adauga cuvantul in vector
-    -pentru qsort am luat cuvintele din vector, dereferentiindu-le
-    -apoi am calculat lungimea fiecaruia, parcurgandu-le caracter cu caracter
-    -daca lungimea este mai mica, interschimb cuvintele
-    -daca lungimea este egala, pun in stiva cele 2 cuvinte, apelez functia strcmp si sterg stiva
+A collection of algorithms, routines, and low-level programs written in **Assembly language**, developed to demonstrate direct processor register interaction, low-level memory management, and system calls.
 
-La task-ul 3:
-    -fac recursiv sirul k-Fibonacci
-    -daca n (ecx) este mai mic decat k (edi) returneaza 0
-    -daca n (ecx) este egal cu k (edi) returneaza 1
-    -altfel calculeaza n - i, salveaza registrele pe stiva, pregateste parametrii si 
-    apeleaza recursiv functia
-    -apoi restaureaza registrele si adauga rezultatul apelului recursiv la suma totala
-    -incrementeaza contorul si verifica daca a calculat toti termenii necesari
+---
 
-La task-ul 4:
+## Table of Contents
 
-    Subtask-ul 1:
-    -verifica daca string-ul este palindrom parcurgand de la stanga la dreapta si de la dreapta
-    la stanga
-    -daca are 0 elemente, returneaza 0, iar daca are 1 element returneaza 1
+1. [Overview](#overview)
+2. [Key Concepts & Features](#key-concepts--features)
+3. [Project Structure](#project-structure)
+4. [Prerequisites](#prerequisites)
+5. [Build & Execution](#build--execution)
+   - [x86 / x86-64 using NASM & LD (Linux)](#x86--x86-64-using-nasm--ld-linux)
+   - [x86-64 Linking with GCC (C Library Interop)](#x86-64-linking-with-gcc-c-library-interop)
+   - [16-bit TASM / MASM (DOSBox / Windows)](#16-bit-tasm--masm-dosbox--windows)
+6. [Debugging with GDB](#debugging-with-gdb)
+7. [Author](#author)
+8. [License](#license)
 
-    Subtask-ul 2:
-    -prima oara am alocat memorie pentru variabile, pastrez un "cel mai bun palindrom", si cea mai 
-    buna lungime apoi lungimea vectorului
-    -m-am folosit de o masca binara pentru a genera toate subseturile posibile ale vectorului de 
-    string-uri
-    -am calculat total = 1 << len care reprezinta numarul total de subseturi posibile
-    -pentru fiecare masca verific bit cu bit pentru a decide daca adaug str[i] in buffer
-    -daca bitul este setat atunci concatenez in buffer str[i]
-    -dupa ce am format un cuvant ii calculez lungimea si verific daca este palindrom
-    -daca este palindrom si este mai lung decat best_len atunci eliberez memoria anterioara, aloc 
-    un nou best copiez noul buffer in best si actualizez best_len
-    -la final dau return la best
+---
 
+## Overview
+
+This repository explores fundamental computer architecture principles and low-level programming concepts, including:
+
+- Direct CPU register manipulation (`RAX`, `RBX`, `RCX`, `RDX`, `RSI`, `RDI`, `RSP`, `RBP`, etc.).
+- Stack frame mechanics: local variable storage, base pointer tracking, and standard calling conventions.
+- Flow control using conditional branching, test operations, and jumps (`cmp`, `test`, `jmp`, `je`, `jne`, `jg`, `jle`).
+- Memory segmentation (`.data`, `.bss`, `.rodata`, `.text`) and pointer dereferencing.
+- Kernel interactions via Linux system calls (`sys_read`, `sys_write`, `sys_exit`).
+
+---
+
+## Key Concepts & Features
+
+- [x] **Arithmetic & Bitwise Operations**: Logical shifts, rotations, bit masking, and arithmetic manipulation.
+- [x] **String Manipulation & I/O**: Custom string length calculation, byte-by-byte copying, and numeric ASCII conversions.
+- [x] **Calling Conventions**: Passing arguments through registers/stack adhering to System V AMD64 ABI standards.
+- [x] **Low-Level Optimization**: Writing compact and cycle-efficient instructions.
+
+---
+
+## Project Structure
+
+```text
+Assembly/
+├── src/                # Assembly source files (.asm / .s)
+│   ├── main.asm        # Program entry point (_start / main)
+│   └── utils.asm       # Helper functions and routines
+├── include/            # Common macros and header files (.inc)
+├── bin/ / build/       # Compiled object files and binaries (.o, executables)
+├── Makefile            # Build automation
+└── README.md           # Project documentation
+```
+
+> *Note: Adjust paths and filenames to match the exact structure of your repository.*
+
+---
+
+## Prerequisites
+
+Depending on your target architecture and assembler dialect:
+
+- **Assembler:** [NASM](https://www.nasm.us/) (Netwide Assembler), [FASM](https://flatassembler.net/), or [MASM/TASM].
+- **Linker:** `ld` (GNU Linker) or `gcc`.
+- **Debugger:** `gdb`, `EDB Debugger`, or `x64dbg`.
+
+### Installation on Ubuntu / Debian
+
+```bash
+sudo apt update
+sudo apt install build-essential nasm gdb
+```
+
+---
+
+## Build & Execution
+
+### x86 / x86-64 using NASM & LD (Linux)
+
+1. **Assemble the source file into an object file:**
+   ```bash
+   nasm -f elf64 src/main.asm -o build/main.o
+   ```
+   *(For 32-bit systems, use `-f elf32`)*
+
+2. **Link the object file:**
+   ```bash
+   ld build/main.o -o bin/program
+   ```
+
+3. **Run the executable:**
+   ```bash
+   ./bin/program
+   ```
+
+---
+
+### x86-64 Linking with GCC (C Library Interop)
+
+If using external C standard library functions (e.g., `printf`, `scanf`):
+
+```bash
+nasm -f elf64 src/main.asm -o build/main.o
+gcc -no-pie build/main.o -o bin/program
+./bin/program
+```
+
+---
+
+### 16-bit TASM / MASM (DOSBox / Windows)
+
+If the project targets 16-bit real mode under DOS:
+
+```bat
+TASM main.asm
+TLINK main.obj
+main.exe
+```
+
+---
+
+## Debugging with GDB
+
+To inspect registers and step through individual instructions:
+
+1. **Compile with debugging symbols (`-g` and DWARF format):**
+   ```bash
+   nasm -f elf64 -g -F dwarf src/main.asm -o build/main.o
+   ld build/main.o -o bin/program
+   ```
+
+2. **Start GDB:**
+   ```bash
+   gdb -tui ./bin/program
+   ```
+
+3. **Useful GDB commands:**
+   - `layout asm` — Display the disassembly view.
+   - `layout regs` — Display CPU register states in real time.
+   - `break _start` (or `break main`) — Set a breakpoint at entry.
+   - `run` — Start execution.
+   - `stepi` / `si` — Step into next assembly instruction.
+   - `nexti` / `ni` — Step over next assembly instruction.
+   - `info registers` — Print all register contents.
+
+---
+
+## Author
+
+- **David Farta** - [GitHub Profile](https://github.com/FartaDavid)
+
+---
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
